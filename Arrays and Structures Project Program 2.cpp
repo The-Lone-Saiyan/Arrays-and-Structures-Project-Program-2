@@ -9,37 +9,40 @@ const int MaxRows = 10;
 const int Columns = 7;
 const string FileName = "Runner Data.txt";
 
+struct RunnerRecords
+{
+	string RunnerNames;
+	double RunnerData[MaxRows];
+	double Total, Averages;
+};
+
 // Reads the names of runners from the file.
 // Pre-Condition: Finds existing file and reads and stores names of runners.
 // Post-Condition: Holds the names for the next function to use.
-int RunnerArray(string Names[], double Miles[][Columns], int MaxRows);
+int RunnerArray(RunnerRecords Runners[], int MaxRows);
 
 // Calculates the total and average miles for each runner.
 // Pre-Condition: Receives the raw miles for each runner and number of runners.
 // Post-Condition: Total and average miles is calculated for each runner and put at the end of the row for that runner.
-void RunnersAveragesandTotal(double Miles[][Columns], double Averages[], double Total[], int NumberofRows);
+void RunnersAveragesandTotal(RunnerRecords Runners[], int NumberofRows);
 
 // Outputs on the screen the Names, Miles, Total Miles, and Average Miles for each runner.
 // Pre-Condition: Checks for Averages and Totals for runners from a previous function.
 // Post-Condition: Outputs the data on each runner on screen with proper formatting and labels.
-
-void LabelsandOutput(string RunnerNames[], double Miles[][Columns], double Averages[], double Total[], int NumberofRecords);
+void LabelsandOutput(RunnerRecords Runners[], int NumberofRecords);
 
 int main()
 {
-	string RunnerNames[MaxRows];
-	double RunnerData[MaxRows][Columns];
-	double Averages[MaxRows];
-	double Total[MaxRows];
+	RunnerRecords Runners[MaxRows];
 	int NumberofRecords;
-	NumberofRecords = RunnerArray(RunnerNames, RunnerData, MaxRows);
-	RunnersAveragesandTotal(RunnerData, Total, Averages, NumberofRecords);
-	LabelsandOutput(RunnerNames, RunnerData, Total, Averages, NumberofRecords);
+	NumberofRecords = RunnerArray(Runners, MaxRows);
+	RunnersAveragesandTotal(Runners, NumberofRecords);
+	LabelsandOutput(Runners, NumberofRecords);
 
 	return 0;
 }
 
-int RunnerArray(string Names[], double Miles[][Columns], int MaxRows)
+int RunnerArray(RunnerRecords Runners[], int MaxRows)
 {
 	ifstream myiFile;
 	int Rows = 0;
@@ -53,22 +56,22 @@ int RunnerArray(string Names[], double Miles[][Columns], int MaxRows)
 		return -1;
 	}
 
-	myiFile >> Names[Rows];
+	myiFile >> Runners[Rows].RunnerNames;
 	while (!myiFile.eof() && !(Rows >= MaxRows))
 	{
 		for (int i = 0; i < Columns; i++)
 		{
-			myiFile >> Miles[Rows][i];
+			myiFile >> Runners[Rows].RunnerData[i];
 		}
 		Rows++;
-		myiFile >> Names[Rows];
+		myiFile >> Runners[Rows].RunnerNames;
 	}
 	myiFile.close();
 
 	return Rows;
 }
 
-void RunnersAveragesandTotal(double Miles[][Columns], double Total[], double Averages[], int NumberofRows)
+void RunnersAveragesandTotal(RunnerRecords Runners[], int NumberofRows)
 {
 	double Sum = 0;
 	for (int i = 0; i < NumberofRows; i++)
@@ -76,24 +79,24 @@ void RunnersAveragesandTotal(double Miles[][Columns], double Total[], double Ave
 		Sum = 0;
 		for (int j = 0; j < Columns; j++)
 		{
-			Sum = Sum + Miles[i][j];
+			Sum = Sum + Runners[i].RunnerData[j];
 		}
-		Total[i] = Sum;
-		Averages[i] = Sum / Columns;
+		Runners[i].Total = Sum;
+		Runners[i].Averages = Sum / Columns;
 	}
 }
 
-void LabelsandOutput(string RunnerNames[], double RunnerData[][Columns], double Total[], double Averages[], int NumberofRecords)
+void LabelsandOutput(RunnerRecords Runners[], int NumberofRecords)
 {
 	cout << fixed << setprecision(2);
 	cout << "Runner  Sunday  Monday Tuesday Wednesday Thursday Friday Saturday Total  Average" << endl;
 	for (int i = 0; i < NumberofRecords; i++)
 	{
-		cout << left << setw(10) << RunnerNames[i];
+		cout << left << setw(10) << Runners[i].RunnerNames;
 		for (int j = 0; j < Columns; j++)
 		{
-			cout << left << setw(8.5) << RunnerData[i][j];
+			cout << left << setw(8.5) << Runners[i].RunnerData[j];
 		}
-		cout << left << setw(8.5) << Total[i] << left << setw(7) << Averages[i] << endl;
+		cout << left << setw(8.5) << Runners[i].Total << left << setw(7) << Runners[i].Averages << endl;
 	}
 }
